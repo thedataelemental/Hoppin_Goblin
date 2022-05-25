@@ -58,20 +58,18 @@ goblin_img_4 = pygame.image.load\
 	("Assets/Exports/hoppin_goblin_4.png")
 	
 goblin_images = [goblin_img_1, goblin_img_2, goblin_img_3, goblin_img_4]
-
 knight_image = pygame.image.load("Assets/Exports/knight.png")
-
 collision_img = pygame.image.load("Assets/Exports/collision.png")
-
 flower_img = pygame.image.load("Assets/Exports/flower.png")
-
+ground_img = pygame.image.load("Assets/Exports/ground.png")
+HG_logo = pygame.image.load("Assets/Exports/HG_logo.png")
 
 
 # Create goblin player and knight obstacles
-player = Goblin(goblin_images, 120, 320)
-knight_1 = Obstacle(knight_image, 1000, 368)
-knight_2 = Obstacle(knight_image, 2000, 368)
-knight_3 = Obstacle(knight_image, 2500, 368)
+player = Goblin(goblin_images, 120, 312)
+knight_1 = Obstacle(knight_image, 1000, 360)
+knight_2 = Obstacle(knight_image, 2000, 360)
+knight_3 = Obstacle(knight_image, 2500, 360)
 knights = [knight_1, knight_2, knight_3]
 
 # Create decorative plants
@@ -79,16 +77,21 @@ flower = Plant(flower_img, 1100, 400)
 plants = [flower,]
 
 # Define starting conditions
-text_font = pygame.font.Font("Assets/NESfont.ttf", 28)
-WHITE = (255, 255, 255)
-score_counter = 0
 frame_counter = 0
 speed = 5
 collision = False
 clock = pygame.time.Clock()
 jumping = False
 jump_counter = -4
+score_counter = 0
+display_tutorial = True
+ground_offset = 0
 
+# Create font & static text prompts
+text_font = pygame.font.Font("Assets/NESfont.ttf", 28)
+WHITE = (255, 255, 255)
+tutorial_prompt = \
+	text_font.render("PRESS SPACE TO JUMP!", True, WHITE)
 
 # Main game loop
 while collision == False:
@@ -124,6 +127,7 @@ while collision == False:
 	
 	
 	# Make goblin jump #
+	
 	# Track jump's intended path
 	if jumping == True:
 		if (-4 <= jump_counter <= 4):
@@ -134,7 +138,7 @@ while collision == False:
 		jump_counter = -4
 	
 	# Change goblin's height
-	player.y = 128 + (12 * (jump_counter * jump_counter))
+	player.y = 120 + (12 * (jump_counter * jump_counter))
 	
 #	The above code implements this without using the for loop:
 #	for x in range (-4, 5):
@@ -167,23 +171,34 @@ while collision == False:
 			print(score_counter)
 		screen.blit(knight.image, (knight.x, knight.y))
 	
-#	# Move and draw decorative plants
-#	for plant in plants:
-#		plant.x -= speed
-#		if plant.x <= -80:
-#			plant.x = 1200
-#		screen.blit(plant.image, (plant.x, plant.y))
-				
-	score_display = text_font.render("SCORE: " + str(score_counter), True, WHITE)
-	screen.blit(score_display, (400, 200))
+	score_display = \
+		text_font.render("SCORE: " + str(score_counter), True, WHITE)			
+	screen.blit(score_display, (400, 225))
+	
+	# Show 'Press Space' prompt at start of game
+	if score_counter >= 3:
+		display_tutorial = False
 		
+	if display_tutorial == True:
+		screen.blit(tutorial_prompt, (375,275))
+	
+	# Render ground tiles
+	for i in range (0, 40):
+		screen.blit(ground_img, (((48 * i) - ground_offset), 456))
+	
+	ground_offset += speed
+	if ground_offset >= 960:
+		ground_offset = 0
+	
+	# Render game title
+	screen.blit(HG_logo, (300, 25))
+	
 	pygame.display.flip()
 	clock.tick(60)
 
+
 # TODO:
 # Randomize guard spawns.
-# Fix running animation.
-# Add more detail to the ground.
 
 # Guard spawn randomization:
 # Determine guard spawning location based on the spawn loc of prev guard.
