@@ -27,8 +27,8 @@ class Obstacle:
 		self.y = y
 		self.collided = False
 		
-# Decorative plants on the ground
-class Plant:
+# Decorative clouds
+class Cloud:
 	def __init__(self, image, x, y):
 		self.image = image
 		self.x = x
@@ -63,6 +63,7 @@ collision_img = pygame.image.load("Assets/Exports/collision.png")
 flower_img = pygame.image.load("Assets/Exports/flower.png")
 ground_img = pygame.image.load("Assets/Exports/ground.png")
 HG_logo = pygame.image.load("Assets/Exports/HG_logo.png")
+cloud_img = pygame.image.load("Assets/Exports/cloud.png")
 
 
 # Create goblin player and knight obstacles
@@ -72,9 +73,11 @@ knight_2 = Obstacle(knight_image, 2000, 360)
 knight_3 = Obstacle(knight_image, 2500, 360)
 knights = [knight_1, knight_2, knight_3]
 
-# Create decorative plants
-flower = Plant(flower_img, 1100, 400)
-plants = [flower,]
+# Create decorative clouds
+cloud_1 = Cloud(cloud_img, 800, 100)
+cloud_2 = Cloud(cloud_img, -200, 25)
+clouds = [cloud_1, cloud_2]
+
 
 # Define starting conditions
 frame_counter = 0
@@ -145,8 +148,22 @@ while collision == False:
 #		player.y = 128 + (12 * (x * x))
 
 	
-	# Render screen
+# Render screen #
+
 	screen.blit(background_img, (0,0))
+	
+	# Render game title
+	screen.blit(HG_logo, (300, 25))
+	
+	# Move and render clouds
+	for cloud in clouds:
+		cloud.x -= (speed / 2)
+		screen.blit(cloud_img, (cloud.x, cloud.y))
+		
+		if cloud.x <= -1000:
+			cloud.x = 1000
+	
+	# Render player
 	screen.blit(player.current_image, (player.x, player.y))
 	
 	# Move enemy knights
@@ -190,8 +207,6 @@ while collision == False:
 	if ground_offset >= 960:
 		ground_offset = 0
 	
-	# Render game title
-	screen.blit(HG_logo, (300, 25))
 	
 	pygame.display.flip()
 	clock.tick(60)
